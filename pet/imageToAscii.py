@@ -21,7 +21,7 @@ class Image:
     def __init__(self, file_path: str) -> None:
         self.file_path: str = file_path
         
-        self.image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
+        self.image = cv2.imread(file_path)
         
         # print(type(self.image))
         
@@ -43,7 +43,35 @@ class Image:
         
         return "success"
     
-    def get_image_string(self, terminal_character_size=os.get_terminal_size()) -> str:
+    def get_colorful_image_string(self, terminal_character_width: float=(os.get_terminal_size()[0] * 0.6)) -> str:
+        """
+        Get the colorful string representing the image in with ASCII character.
+        Optionally pass the terminal width (in characters) to adjust the size of the image.
+        By default it uses the 60% of the width of the terminal as the width of the ASCII image.
+        """
+        if self.image is None:
+            return "Could not read the image."
+                
+        
+        width_of_resclaed_image = int(terminal_character_width)
+        height_of_rescaled_image = int(terminal_character_width * 0.45)
+        
+        
+        rescaled_image_size = width_of_resclaed_image, height_of_rescaled_image
+        
+        rescaled_image = cv2.resize(self.image, rescaled_image_size)
+        
+        image_string = ""
+        
+        for row_of_image in rescaled_image:
+            for rgb_value in row_of_image:
+                character = self.get_character_for_rgb_value(rgb_value)
+                image_string += character
+            image_string += '\n'
+        
+        return image_string
+    
+    def get_gery_scale_image_string(self, terminal_character_width: float=(os.get_terminal_size()[0] * 0.3)) -> str:
         """
         Get the string representing the image in with ASCII character.
         Optionally pass the terminal size (in characters) to adjust the size of the image.
@@ -52,10 +80,8 @@ class Image:
         
         if self.image is None:
             return "Could not read the image."
-                    
-        size_of_image_in_terminal  = 0.6
         
-        width_of_resclaed_image = int(os.get_terminal_size()[0] * size_of_image_in_terminal)
+        width_of_resclaed_image = int(terminal_character_width)
         height_of_rescaled_image = width_of_resclaed_image // 3
         
         
@@ -65,8 +91,8 @@ class Image:
         
         image_string = ""
         
-        for i, row_of_image in enumerate(rescaled_image):
-            for j, grey_scale_value in enumerate(row_of_image):
+        for row_of_image in cv2.cvtColor(rescaled_image, cv2.COLOR_BGR2GRAY):
+            for grey_scale_value in row_of_image:
                 character = self.get_character_for_gery_scale_value(grey_scale_value)
                 image_string += character
             image_string += '\n'
@@ -80,3 +106,7 @@ class Image:
         corresponding_ascii_character = self.CHARACTERS[index_of_ascii_character]
         
         return corresponding_ascii_character
+        
+    
+    def get_character_for_rgb_value(self, rgb_value) -> str:
+        return f"\033[38;2;{rgb_value[2]};{rgb_value[1]};{rgb_value[0]}m#"

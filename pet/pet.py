@@ -13,11 +13,9 @@ class Pet:
     """
     
     
-    def __init__(self, name="Soobin", smiling_dog="/.pet/vendor/similing_dog.png", walking_dog="./pet/vendor/dog.png", barking_dog="./pet/vendor/barking_dog.png") -> None:
+    def __init__(self, name: str, dog_images: List[str]) -> None:
         self.name = name
-        self.smiling_dog_image = Image(smiling_dog)
-        self.walking_dog_image = Image(walking_dog)
-        self.barking_dog_image = Image(barking_dog)
+        self.dog_images = dog_images
         
         
     def get_name(self) -> str:
@@ -26,20 +24,8 @@ class Pet:
         """
         return self.name
     
-    def get_walking_image(self) -> str:
+    def get_image(self, index: int) -> str:
         """
         Returns a string that looks like the image of a walking dog.
         """
-        return self.walking_dog_image.get_image_string()
-        
-    def get_barking_image(self) -> str:
-        """
-        Returns a string that looks like the image of a barking dog.
-        """
-        return self.barking_dog_image.get_image_string()
-    
-    def get_smiling_image(self) -> str:
-        """
-        Returns a string that looks like the image of a smiling dog.
-        """
-        return self.smiling_dog_image.get_image_string()
+        return Image(self.dog_images[index]).get_image_string()

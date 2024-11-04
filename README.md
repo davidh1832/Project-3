@@ -53,7 +53,10 @@ verify_password()
 
 add_list()
 
-#changes which to-do list is accessed 
+#changes which profile is used to access a different to-do list
 
-change_list()
+select_user()
+
+# Select or create a to-do list for the current user
+select_list()
 ```

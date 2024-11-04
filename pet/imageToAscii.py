@@ -67,7 +67,7 @@ class Image:
             for rgb_value in row_of_image:
                 character = self.get_character_for_rgb_value(rgb_value)
                 image_string += character
-            image_string += '\n'
+            image_string += "\033[39m\033[49m\n"
         
         return image_string
     
@@ -95,7 +95,7 @@ class Image:
             for grey_scale_value in row_of_image:
                 character = self.get_character_for_gery_scale_value(grey_scale_value)
                 image_string += character
-            image_string += '\n'
+            image_string += "\n"
         
         return image_string
         
@@ -109,4 +109,10 @@ class Image:
         
     
     def get_character_for_rgb_value(self, rgb_value) -> str:
-        return f"\033[38;2;{rgb_value[2]};{rgb_value[1]};{rgb_value[0]}m#"
+        blue, green, red = rgb_value
+        if blue == green == red == 0: return "\033[39m\033[49m"+' '
+        return f"\033[38;2;{red};{green};{blue}m" + self.get_character_for_gery_scale_value(self.rgb_to_grey_scale(red, green, blue))
+        # return f"\033[38;2;{red};{green};{blue};48;2;{red};{green};{blue}m#"
+        
+    def rgb_to_grey_scale(self, red, green, blue) -> int:
+        return int(0.299 * red + 0.587 * green + 0.114 * blue)

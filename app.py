@@ -33,6 +33,7 @@ def abort_if_empty():
 parser = reqparse.RequestParser()
 parser.add_argument('task', location='form')
 parser.add_argument('completed', type=bool, location='form')
+parser.add_argument('file', location='form')
 
 # Todo
 class Todo(Resource):
@@ -70,6 +71,21 @@ def toggle_complete(todo_id):
     save_tasks()
     return jsonify(TODOS[todo_id])
 
+#ChangeList
+@app.route('/todos/changelist',methods=['PATCH'])
+def change_list():
+    global currentfile
+    global TODOS
+    args = parser.parse_args()
+    currentfile = args['file']
+    TODOS = load_tasks()
+    return currentfile
+
+def delete(self, todo_id):
+        abort_if_todo_doesnt_exist(todo_id)
+        del TODOS[str(todo_id)]
+        save_tasks()
+        return '', 204
 # TodoList
 class TodoList(Resource):
     def get(self):
@@ -89,6 +105,9 @@ class TodoList(Resource):
         }
         save_tasks()
         return TODOS[str(todo_id)], 201
+    
+
+
 
 # API resource routing
 api.add_resource(TodoList, '/todos')

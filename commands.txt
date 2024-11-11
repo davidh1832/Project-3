@@ -1,0 +1,12 @@
+Get a task:  curl http://localhost:5000/todos/todo(number)
+
+get the list:  curl http://localhost:5000/todos
+
+Delete a task: curl http://localhost:5000/todos/todo2 -X DELETE -v
+
+Add a task: curl http://localhost:5000/todos -d "task=(Task name)" -X POST -v
+
+Update a task: curl http://localhost:5000/todos/todo3 -d "task=(new task name)" -X PUT -v
+
+Change list: curl http://localhost:5000/todos/changelist -d "file=(File name)" -X Patch -v
+

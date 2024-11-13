@@ -1,6 +1,6 @@
 ## TO DO LIST
 
-Repository for Software Engineering project #3 focusing on further development of a To-Do-List. This repository was created for our third group project for CS 230 Software Engineering, meant to further expand upon the to-do list by merging two groups with similar ideas together. 
+Repository for Software Engineering project #3 focusing on further development of a To-Do-List. This repository was created for our third group project for CS 230 Software Engineering, meant to further expand upon the To-Do-List by merging two groups with similar ideas together. The To-Do-List was implemented with the use of a restful API, using the Flask API Framework.
 
 ## Installation
 Download the files and open them in whatever code editor you prefer, or use git to clone the repository.

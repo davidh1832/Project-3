@@ -2,7 +2,7 @@
 
 This is our project for the CS230 Sofware Engineering. We are building a TODO List. We are required to use the REST API.
 
-## Instillation
+## Installation
 Download the files and open them in whatever code editor you prefer, or use git to clone the repository.
 ```bash
 git clone https://github.com/davidh1832/Project-3.git

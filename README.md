@@ -1,6 +1,6 @@
 ## TO DO LIST
 
-This is our project for the CS230 Sofware Engineering. We are building a TODO List. We are required to use the REST API.
+Repository for Software Engineering project #3 focusing on further development of a To-Do-List. This repository was created for our third group project for CS 230 Software Engineering, meant to further expand upon the to-do list by merging two groups with similar ideas together. 
 
 ## Installation
 Download the files and open them in whatever code editor you prefer, or use git to clone the repository.
@@ -60,3 +60,14 @@ select_user()
 # Select or create a to-do list for the current user
 select_list()
 ```
+
+
+
+## Contribution
+Pull requests are welcome. For major changes, please open an issue first
+to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+Current Contributors: 
+  

@@ -61,6 +61,40 @@ select_user()
 select_list()
 ```
 
+## Login
+The application includes a user authentication system with the following functions:
+
+### Load user credentials from JSON file
+
+load_credentials()
+- Reads user credentials from credentials.json
+- Creates empty credentials if file doesn't exist
+- Returns credentials data structure
+
+### Save user credentials to JSON file 
+
+save_credentials()
+- Writes current credentials to credentials.json
+- Formats JSON with proper indentation
+
+### Add new user credentials
+
+add_credentials()
+- Adds a new username/password pair to credentials
+- Automatically saves updated credentials
+
+### Remove user credentials
+
+remove_credentials() 
+- Removes specified username/password from credentials
+- Automatically saves updated credentials
+
+#Verify user login credentials
+
+verify_login()
+- Checks if username/password combination exists
+- Returns True if valid credentials, False otherwise
+
 
 
 ## Contribution

@@ -1,5 +1,6 @@
 # client.py
 import requests
+import json
 
 BASE_URL = "http://127.0.0.1:5000/todos"
 
@@ -19,6 +20,22 @@ def show_tasks(username, list_name):
         for task_id, task_data in tasks.items():
             status = "✓" if task_data['completed'] else "✗"
             print(f"{task_id}. {task_data['task']} [{status}]")
+            
+def show_lists(username):
+    url = f"{BASE_URL}/{username}"
+    response = requests.get(url)
+    if response.status_code == 404:
+        print("user not found")
+    else:
+        names = response.json()
+        List_names = list(names.keys())
+        index = 1
+        for list_name in List_names:
+            print(index,":",list_name)
+            index+=1
+        index = 0
+            
+        
 
 def add_task(username, list_name):
     task = input("Enter the new task: ")
@@ -46,6 +63,7 @@ def toggle_task(username, list_name):
         print("Task completion toggled.")
     else:
         print("Failed to toggle task completion.")
+        
 
 def main():
     username = select_user()
@@ -56,7 +74,8 @@ def main():
         print("2. Add Task")
         print("3. Delete Task")
         print("4. Toggle Task Completion")
-        print("5. Exit")
+        print("5. show lists")
+        print("6. Exit")
 
         choice = input("Enter your choice: ")
 
@@ -69,6 +88,8 @@ def main():
         elif choice == '4':
             toggle_task(username, list_name)
         elif choice == '5':
+            show_lists(username)
+        elif choice == '6':
             break
         else:
             print("Invalid choice. Please try again.")

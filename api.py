@@ -60,6 +60,13 @@ class Todo(Resource):
         TODOS[username][list_name][str(todo_id)] = task
         save_tasks()
         return task, 200
+    
+class Lists(Resource):
+    def get(self, username):
+        if username not in TODOS:
+            abort(404, message=f"Lists for '{username}' not found ")
+        return TODOS[username]
+
 
 # Toggle task completion status
 @app.route('/todos/<string:username>/<string:list_name>/<int:todo_id>/toggle', methods=['PATCH'])
@@ -95,6 +102,8 @@ class TodoList(Resource):
 # API resource routing
 api.add_resource(TodoList, '/todos/<string:username>/<string:list_name>')
 api.add_resource(Todo, '/todos/<string:username>/<string:list_name>/<int:todo_id>')
+api.add_resource(Lists,'/todos/<string:username>')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

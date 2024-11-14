@@ -9,8 +9,11 @@ def select_user():
 def select_list():
     return input("Enter the list name: ")
 
+def get_password():
+    return input("Enter your password: ")
+
 def show_tasks(username, list_name):
-    url = f"{BASE_URL}/{username}/{list_name}"
+    url = f"{BASE_URL}/{username}/{list_name}"t
     response = requests.get(url)
     if response.status_code == 404:
         print("List not found.")

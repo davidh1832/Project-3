@@ -43,7 +43,7 @@ class Image:
         
         return "success"
     
-    def get_colorful_image_string(self, terminal_character_width: float=(os.get_terminal_size()[0] * 0.6)) -> str:
+    def get_colorful_image_string(self, terminal_character_width: float=(os.get_terminal_size()[0] * 0.5)) -> str:
         """
         Get the colorful string representing the image in with ASCII character.
         Optionally pass the terminal width (in characters) to adjust the size of the image.

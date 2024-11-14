@@ -28,4 +28,4 @@ class Pet:
         """
         Returns a string that looks like the image of a walking dog.
         """
-        return Image(self.dog_images[index]).get_image_string()
+        return Image(self.dog_images[index]).get_colorful_image_string()

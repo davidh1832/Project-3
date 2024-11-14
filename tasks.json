@@ -28,5 +28,13 @@
                 "completed": false
             }
         }
+    },
+    "Jake": {
+        "Chores": {
+            "1": {
+                "task": "Dust",
+                "completed": true
+            }
+        }
     }
 }

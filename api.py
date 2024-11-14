@@ -77,6 +77,7 @@ def toggle_complete(username, list_name, todo_id):
     save_tasks()
     return jsonify(TODOS[username][list_name][todo_id])
 
+
 # TodoList Resource
 class TodoList(Resource):
     def get(self, username, list_name):

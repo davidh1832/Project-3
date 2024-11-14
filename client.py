@@ -14,7 +14,7 @@ def get_password():
     return input("Enter your password: ")
 
 def show_tasks(username, list_name):
-    url = f"{BASE_URL}/{username}/{list_name}"t
+    url = f"{BASE_URL}/{username}/{list_name}"
     response = requests.get(url)
     if response.status_code == 404:
         print("List not found.")
@@ -66,6 +66,20 @@ def toggle_task(username, list_name):
         print("Task completion toggled.")
     else:
         print("Failed to toggle task completion.")
+
+def edit_task(username, list_name):
+    task_id = input("Enter the task ID to edit: ")
+    task = input("Enter the new task description: ")
+    completed = input("Is the task completed? (yes/no): ").strip().lower() == "yes"
+    url = f"{BASE_URL}/{username}/{list_name}/{task_id}"
+    
+    response = requests.put(url, data={'task': task, 'completed': completed})
+    if response.status_code == 200:
+        print("Task updated successfully.")
+    else:
+        print("Failed to update task.")
+
+
         
 
 def main():

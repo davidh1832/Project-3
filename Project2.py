@@ -185,7 +185,14 @@ current_list = ""
 def main():
     global current_list
     
-    # new_user = input("Are you a new user? 1. YES")
+    new_user = input("Login? 1. YES 2.Register New User")
+    
+    if new_user == '2':
+        new_user_name = input("New Username: ")
+        new_password = input("New Password: ")
+        login.add_credentials(new_user_name, new_password)
+        
+    print("Login!")
     
     user_name = client.select_user()
     password = client.get_password()
@@ -208,10 +215,10 @@ def main():
         print("1. Add a new task to accomplish (Add task)")
         print("2. What are things I need to do? (Show tasks)")
         print("3. I will not be able to finish a task. (Delete Task)")
-        # print("4. Edit Task")
+        print("4. I need to change up my task.")
         print("5. I have completed a task. (Change Task Status)")
         print("6. Let me work with a different list. (Switch List)")
-        print("7. I am busy now see you late. (Exit)")
+        print("7. I am busy now see you later. (Exit)")
 
         choice = input("Enter your choice: ")
         if choice == '1':
@@ -222,10 +229,10 @@ def main():
             print("What taks are you going to accomplish today.\n", my_dog.get_image(1))
         elif choice == '3':
             client.delete_task(user_name, current_list)
-            print("What happened? Were you not able to finish the taksk?\n", my_dog.get_image(2))
+            print("What happened? Were you not able to finish the task?\n", my_dog.get_image(2))
         elif choice == '4':
-            # edit_task(tasks)
-            pass
+            client.edit_task(user_name, current_list)
+            print("Typo! Lets edit this task!\n", my_dog.get_image(2))
         elif choice == '5':
             client.toggle_task(user_name, current_list)
             print("I am glad you completed your task\n", my_dog.get_image(3))

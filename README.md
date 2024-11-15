@@ -13,52 +13,30 @@ Python
 
 ## Functions
 ```python
-#Load tasks into Json file
+#These are the functions from Client
 
-load_tasks()
+add_task()
+#Adds a task to the list through sending a POST request to the API
 
-#Save tasks to Json file
-
-save_Tasks()
-
-#Clear all the tasks from the Json file
-
-clear_Tasks()
-
-#Add a task into the Json file
-
-add_Task()
-
-#Displays tasks written in the Json file
-
-show_Tasks()
-
-#Changes the status of a task(Complete, Incomplete, Inprogress, etc)
-
-update_task_status()
-
-#deletes a task from the Json file
+show_tasks()
+#Lists all of the tasks in a list through a GET request to the API
 
 delete_task()
-
-#Access a certain task and make changes to it
+#Deletes the specified task from the currently accessed list through a DELETE request to the API
 
 edit_task()
+#Edits the specified tasks name through a PUT request to the API
 
-#Verifies the password defined in the user's environmental variable file.
+toggle_task()
+#toggles the specified task to display completion through a PATCH request to the API
 
-verify_password()
-
-#Creates a JSON file to act as another to-do list
-
-add_list()
-
-#changes which profile is used to access a different to-do list
-
-select_user()
-
-# Select or create a to-do list for the current user
 select_list()
+#Changes the accesed list
+
+show_lists()
+#displays all of the lists of the user
+
+
 ```
 
 ## Login

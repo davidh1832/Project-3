@@ -1,5 +1,6 @@
 import json
 import os
+import bcrypt
 
 def load_credentials():
     """Load user credentials from JSON file"""
@@ -21,13 +22,13 @@ def save_credentials(credentials):
 def add_credentials(username, password):
     """Add new user credentials"""
     credentials = load_credentials()
-    credentials['users'].append({"username": username, "password": password})
+    credentials['users'].append({"username": username, "password": bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())})
     save_credentials(credentials)
 
 def remove_credentials(username, password):
     """Remove user credentials"""
     credentials = load_credentials()
-    credentials['users'] = [user for user in credentials['users'] if user['username'] != username and user['password'] != password]
+    credentials['users'] = [user for user in credentials['users'] if user['username'] != username and user['password'] != bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())]
     save_credentials(credentials)
 
 def verify_login(username, password):
@@ -35,6 +36,6 @@ def verify_login(username, password):
     credentials = load_credentials()
     
     for user in credentials['users']:
-        if user['username'] == username and user['password'] == password:
+        if user['username'] == username and bcrypt.checkpw(password.encode('utf-8'), user['password']):
             return True
     return False

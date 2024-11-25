@@ -1,6 +1,7 @@
 import unittest
 import os
 import json
+import bcrypt
 from login import load_credentials, save_credentials, add_credentials, remove_credentials, verify_login
 
 class TestLogin(unittest.TestCase):
@@ -10,7 +11,7 @@ class TestLogin(unittest.TestCase):
             "users": [
                 {
                     "username": "testuser",
-                    "password": "testpass"
+                    "password": bcrypt.hashpw("testpass".encode('utf-8'), bcrypt.gensalt())
                 }
             ]
         }
@@ -24,7 +25,8 @@ class TestLogin(unittest.TestCase):
     def test_load_credentials(self):
         """Test loading credentials from file"""
         credentials = load_credentials()
-        self.assertEqual(credentials, self.test_credentials)
+        self.assertEqual(credentials['users'][0]['username'], self.test_credentials['users'][0]['username'])
+        self.assertTrue(bcrypt.checkpw("testpass".encode('utf-8'), credentials['users'][0]['password']))
 
     def test_load_credentials_no_file(self):
         """Test loading credentials when file doesn't exist"""
@@ -37,17 +39,14 @@ class TestLogin(unittest.TestCase):
         """Test adding new user credentials"""
         add_credentials("newuser", "newpass")
         credentials = load_credentials()
-        self.assertTrue(
-            {"username": "newuser", "password": "newpass"} in credentials["users"]
-        )
+        self.assertTrue(any(user['username'] == "newuser" for user in credentials["users"]))
+        self.assertTrue(any(bcrypt.checkpw("newpass".encode('utf-8'), user['password']) for user in credentials["users"]))
 
     def test_remove_credentials(self):
         """Test removing user credentials"""
         remove_credentials("testuser", "testpass")
         credentials = load_credentials()
-        self.assertFalse(
-            {"username": "testuser", "password": "testpass"} in credentials["users"]
-        )
+        self.assertFalse(any(user['username'] == "testuser" for user in credentials["users"]))
 
     def test_verify_login_success(self):
         """Test successful login verification"""
@@ -56,6 +55,21 @@ class TestLogin(unittest.TestCase):
     def test_verify_login_failure(self):
         """Test failed login verification"""
         self.assertFalse(verify_login("wronguser", "wrongpass"))
+
+    def test_save_credentials(self):
+        """Test saving credentials to file"""
+        new_credentials = {
+            "users": [
+                {
+                    "username": "newuser",
+                    "password": bcrypt.hashpw("newpass".encode('utf-8'), bcrypt.gensalt())
+                }
+            ]
+        }
+        save_credentials(new_credentials)
+        loaded_credentials = load_credentials()
+        self.assertEqual(loaded_credentials['users'][0]['username'], new_credentials['users'][0]['username'])
+        self.assertTrue(bcrypt.checkpw("newpass".encode('utf-8'), loaded_credentials['users'][0]['password']))
 
 if __name__ == '__main__':
     unittest.main() 

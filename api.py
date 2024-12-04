@@ -1,100 +1,160 @@
-# api.py
-import json
-import os
-from flask import Flask, jsonify
-from flask_restful import reqparse, abort, Api, Resource
+from flask import Flask, request, jsonify
 from flask_cors import CORS
+import json, os
 
 app = Flask(__name__)
-api = Api(app)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-currentfile = "tasks.json"
+# File paths
+tasks_file = "tasks.json"
+credentials_file = "credentials.json"
 
-# Load tasks from file with error handling
+# Helper functions to load and save tasks
 def load_tasks():
     try:
-        with open(currentfile, "r") as file:
+        with open(tasks_file, "r") as file:
             return json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
-        # Return an empty structure if file not found or corrupted
         return {}
 
-# Save tasks atomically to avoid data corruption
-def save_tasks():
-    tmp_file = f"{currentfile}.tmp"
+def load_credentials():
+    try:
+        with open(credentials_file, "r") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+def save_tasks(tasks):
+    tmp_file = f"{tasks_file}.tmp"
     with open(tmp_file, "w") as file:
-        json.dump(TODOS, file, indent=4)
-    os.replace(tmp_file, currentfile)
+        json.dump(tasks, file, indent=4)
+    os.replace(tmp_file, tasks_file)
 
-# Initialize the TODOS dictionary
-TODOS = load_tasks()
+def save_credentials(credentials):
+    tmp_file = f"{credentials_file}.tmp"
+    with open(tmp_file, "w") as file:
+        json.dump(credentials, file, indent=4)
+    os.replace(tmp_file, credentials_file)
 
-# Helper functions
-def abort(username, list_name, todo_id):
+# Load data
+tasks_data = load_tasks()
+credentials_data = load_credentials()
+
+# Route: Register User
+@app.route('/users/register', methods=['POST'])
+def register_user():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"message": "Username and password are required."}), 400
+
+    if username in credentials_data:
+        return jsonify({"message": "User already exists."}), 400
+
+    # Save password to credentials.json
+    credentials_data[username] = {"password": password}
+    save_credentials(credentials_data)
+
+    # Initialize user tasks in tasks.json
+    tasks_data[username] = {}
+    save_tasks(tasks_data)
+
+    return jsonify({"message": f"User {username} registered successfully."}), 201
+
+# Route: Login User
+@app.route('/users/login', methods=['POST'])
+def login_user():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({"message": "Username and password are required."}), 400
+
+    user_credentials = credentials_data.get(username)
+
+    if not user_credentials:
+        return jsonify({"message": "User does not exist."}), 404
+
+    # Check password
+    if user_credentials.get("password") != password:
+        return jsonify({"message": "Invalid password."}), 401
+
+    return jsonify({"message": "Login successful."}), 200
+ 
+
+# Route: Get All Task Lists
+@app.route('/lists/<string:username>', methods=['GET'])
+def get_lists(username):
+    if username not in TODOS:
+        return jsonify({"message": "User not found."}), 404
+    lists = [{"list_name": list_name} for list_name in TODOS[username].keys()]
+    return jsonify(lists), 200
+
+
+# Route: Create a New List
+@app.route('/lists/<string:username>', methods=['POST'])
+def create_list(username):
+    data = request.json
+    list_name = data.get('list_name')
+    if username not in TODOS:
+        return jsonify({"message": "User not found."}), 404
+    if list_name in TODOS[username]:
+        return jsonify({"message": "List already exists."}), 400
+    TODOS[username][list_name] = {}
+    save_tasks(TODOS)
+    return jsonify({"message": f"List '{list_name}' created successfully."}), 201
+
+# Route: Get All Tasks in a List
+@app.route('/lists/<string:username>/<string:list_name>', methods=['GET'])
+def get_tasks(username, list_name):
+    if username not in TODOS or list_name not in TODOS[username]:
+        return jsonify({"message": "List not found."}), 404
+    tasks = [{"id": task_id, **task_details} for task_id, task_details in TODOS[username][list_name].items()]
+    return jsonify(tasks), 200
+
+# Route: Add a Task
+@app.route('/tasks/<string:username>/<string:list_name>', methods=['POST'])
+def add_task(username, list_name):
+    data = request.json
+    task = data.get('task')
+    if username not in TODOS or list_name not in TODOS[username]:
+        return jsonify({"message": "List not found."}), 404
+    task_id = str(len(TODOS[username][list_name]) + 1)
+    TODOS[username][list_name][task_id] = {"task": task, "completed": False}
+    save_tasks(TODOS)
+    return jsonify({"message": "Task added successfully.", "task": TODOS[username][list_name][task_id]}), 201
+
+# Route: Update or Complete a Task
+@app.route('/tasks/<string:username>/<string:list_name>/<int:todo_id>', methods=['PUT'])
+def update_task(username, list_name, todo_id):
+    # Parse the incoming request to get task details
+    data = request.get_json()
+    # Ensure the task exists before updating
     if username not in TODOS or list_name not in TODOS[username] or str(todo_id) not in TODOS[username][list_name]:
-        abort(404, message=f"Task '{todo_id}' doesn't exist in list '{list_name}' for user '{username}'")
+        return jsonify({"message": f"Task {todo_id} not found in list '{list_name}' for user '{username}'"}), 404
 
-parser = reqparse.RequestParser()
-parser.add_argument('task', location='form')
-parser.add_argument('completed', type=bool, location='form')
-
-# Todo Resource
-class Todo(Resource):
-    def get(self, username, list_name, todo_id):
-        abort(username, list_name, todo_id)
-        return TODOS[username][list_name][str(todo_id)]
-
-    def delete(self, username, list_name, todo_id):
-        abort(username, list_name, todo_id)
-        del TODOS[username][list_name][str(todo_id)]
-        save_tasks()
-        return '', 204
-
-    def put(self, username, list_name, todo_id):
-        args = parser.parse_args()
-        task = {
-            'task': args['task'],
-            'completed': args.get('completed', TODOS[username][list_name][str(todo_id)].get('completed', False))
-        }
-        TODOS[username][list_name][str(todo_id)] = task
-        save_tasks()
-        return task, 200
-
-# Toggle task completion status
-@app.route('/todos/<string:username>/<string:list_name>/<int:todo_id>/toggle', methods=['PATCH'])
-def toggle_complete(username, list_name, todo_id):
-    todo_id = str(todo_id)
-    abort(username, list_name, todo_id)
-    TODOS[username][list_name][todo_id]['completed'] = not TODOS[username][list_name][todo_id].get('completed', False)
+    task = TODOS[username][list_name][str(todo_id)]
+    # Update task with new data
+    task['task'] = data.get('task', task['task'])  # Update task description (optional)
+    task['completed'] = data.get('completed', task['completed'])  # Update completed status (optional)
+    # Save updated tasks back to the file
     save_tasks()
-    return jsonify(TODOS[username][list_name][todo_id])
+    # Return the updated task data as a response
+    return jsonify(task), 200
 
-# TodoList Resource
-class TodoList(Resource):
-    def get(self, username, list_name):
-        if username not in TODOS or list_name not in TODOS[username]:
-            abort(404, message=f"List '{list_name}' not found for user '{username}'")
-        return TODOS[username][list_name]
 
-    def post(self, username, list_name):
-        args = parser.parse_args()
-        if username not in TODOS:
-            TODOS[username] = {}
-        if list_name not in TODOS[username]:
-            TODOS[username][list_name] = {}
-        
-        todo_id = str(int(max(TODOS[username][list_name].keys(), default="0")) + 1)
-        TODOS[username][list_name][todo_id] = {
-            'task': args['task'],
-            'completed': False
-        }
-        save_tasks()
-        return TODOS[username][list_name][todo_id], 201
-
-# API resource routing
-api.add_resource(TodoList, '/todos/<string:username>/<string:list_name>')
-api.add_resource(Todo, '/todos/<string:username>/<string:list_name>/<int:todo_id>')
+# Route: Delete a Task
+@app.route('/tasks/<string:username>/<string:list_name>/<string:task_id>', methods=['DELETE'])
+def delete_task(username, list_name, task_id):
+    if username not in TODOS or list_name not in TODOS[username] or task_id not in TODOS[username][list_name]:
+        return jsonify({"message": "Task not found."}), 404
+    del TODOS[username][list_name][task_id]
+    save_tasks(TODOS)
+    return jsonify({"message": "Task deleted successfully."}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
+

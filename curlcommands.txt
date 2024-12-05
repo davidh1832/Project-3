@@ -1,0 +1,16 @@
+Register User: 
+curl -X POST -d "username=<username>&password=<password>" http://127.0.0.1:5000/users/register
+login user:
+curl -X POST -d "username=<username>&password=<password>" http://127.0.0.1:5000/users/login
+get lists:
+http://127.0.0.1:5000/lists/<username>
+get_tasks:
+http://127.0.0.1:5000/lists/<username>/<list_name>
+create_list
+curl -X POST -d "username=<username>&listname=<listname>" http://127.0.0.1:5000/add_list
+add_task
+curl -X POST -d "task=<taskname>" http://127.0.0.1:5000/tasks/<username>/list_name
+toggle_task_completion
+curl -X PATCH http://127.0.0.1:5000/tasks/<username>/<listname>/<taskid>/toggle
+Delete_task
+curl -X DELETE http://127.0.0.1:5000/tasks/<username>/<list_name>/<task_id>

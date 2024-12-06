@@ -1,0 +1,1 @@
+A folder for all non relevant code for the current project. Repo was getting a little cluttered so I thought this would help.

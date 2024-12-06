@@ -1,0 +1,9 @@
+opencv-python
+Flask
+JSON
+OS
+flask_restful
+flask_cors
+colorama
+requests
+mysql-connector-python

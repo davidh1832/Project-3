@@ -1,0 +1,40 @@
+{
+    "hi": {
+        "hi": {
+            "1": {
+                "task": "cat petting",
+                "completed": false
+            }
+        }
+    },
+    "newuser": {
+        "i": {
+            "1": {
+                "task": "drink water",
+                "completed": true
+            }
+        },
+        "hi": {
+            "1": {
+                "task": "cat",
+                "completed": false
+            },
+            "3": {
+                "task": "dog walking",
+                "completed": false
+            },
+            "4": {
+                "task": "laptop cleaning",
+                "completed": false
+            }
+        }
+    },
+    "Jake": {
+        "Chores": {
+            "1": {
+                "task": "Dust",
+                "completed": true
+            }
+        }
+    }
+}
